@@ -1,15 +1,18 @@
-package com.phoenixjcam.main;
+package com.phoenixjcam.gui;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.phoenixjcam.client.ClientSet;
 import com.phoenixjcam.map.GameMap;
 import com.phoenixjcam.movement.Movement;
 import com.phoenixjcam.player.Player;
@@ -20,7 +23,7 @@ import com.phoenixjcam.player.Player;
  * @author Bart Bien
  * 
  */
-public class Jumper extends JPanel implements Runnable, KeyListener
+public class JumperGUI extends JPanel implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
 
@@ -44,8 +47,12 @@ public class Jumper extends JPanel implements Runnable, KeyListener
 
 	private DrawTime drawTime;
 
-	public Jumper()
+	private ClientSet clientSet;
+	private static int counterServer = 0;
+
+	public JumperGUI(ClientSet clientSet)
 	{
+		this.clientSet = clientSet;
 		drawTime = new DrawTime();
 		setFocusable(true);
 		requestFocus();
@@ -146,6 +153,8 @@ public class Jumper extends JPanel implements Runnable, KeyListener
 
 			System.out.println(player.getPosition());
 
+			sendPlayerPosition(player.getPosition());
+
 			// update position on server on every key pressed
 		}
 		else if (key == KeyEvent.VK_RIGHT)
@@ -176,6 +185,20 @@ public class Jumper extends JPanel implements Runnable, KeyListener
 		{
 			player.decreaseSpeed();
 			System.out.println(player.getPosition());
+		}
+	}
+
+	private void sendPlayerPosition(Point2D.Double position)
+	{
+		try
+		{
+			clientSet.getObjectOutputStream().writeObject(counterServer);
+			counterServer++;
+		}
+		catch (IOException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 
@@ -214,27 +237,4 @@ public class Jumper extends JPanel implements Runnable, KeyListener
 		}
 	}
 
-	/** Game frame */
-	private static void createGUI()
-	{
-		JFrame frame = new JFrame("Jumper");
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setContentPane(new Jumper());
-		frame.setResizable(false);
-		frame.setLocation(200, 200);
-		frame.setSize(WIDTH, HEIGHT);
-
-		frame.setVisible(true);
-	}
-
-	public static void main(String[] args)
-	{
-		javax.swing.SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				createGUI();
-			}
-		});
-	}
 }

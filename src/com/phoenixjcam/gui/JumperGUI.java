@@ -55,7 +55,7 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 		this.clientSet = clientSet;
 		drawTime = new DrawTime();
 		setFocusable(true);
-		requestFocus();
+		// requestFocus();
 	}
 
 	@Override
@@ -85,6 +85,9 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 
 			drawTime.delay = (System.currentTimeMillis() - drawTime.start);
 			drawTime.wait = drawTime.target - drawTime.delay;
+
+			// after focusing on different component like - textArea in this case it require come back to game
+			this.requestFocus();
 
 			if (drawTime.wait > 0)
 			{
@@ -146,14 +149,14 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 	public void keyPressed(KeyEvent e)
 	{
 		int key = e.getKeyCode();
+		Point2D.Double position = player.getPosition();
 
 		if (key == KeyEvent.VK_LEFT)
 		{
+			sendPlayerPosition(position);
 			player.setTurnedLeft(true);
 
-			System.out.println(player.getPosition());
-
-			sendPlayerPosition(player.getPosition());
+			System.out.println(position);
 
 			// update position on server on every key pressed
 		}
@@ -190,9 +193,13 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 
 	private void sendPlayerPosition(Point2D.Double position)
 	{
+		Point2D.Double pos = new Point2D.Double(position.x, position.y);
+
 		try
 		{
-			clientSet.getObjectOutputStream().writeObject(counterServer);
+			// clientSet.getObjectOutputStream().writeObject(counterServer);
+			// clientSet.getObjectOutputStream().writeObject(position);
+			clientSet.getObjectOutputStream().writeObject(pos);
 			counterServer++;
 		}
 		catch (IOException e1)

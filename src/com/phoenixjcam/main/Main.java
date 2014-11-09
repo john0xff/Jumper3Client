@@ -52,7 +52,7 @@ public class Main
 	{
 
 		JTextArea textArea = new JTextArea();
-		textArea.setEditable(false);
+		textArea.setEditable(true);
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setPreferredSize(new Dimension(300, JumperGUI.HEIGHT));
 		frame.add(scrollPane, BorderLayout.LINE_END);

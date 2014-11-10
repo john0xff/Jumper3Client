@@ -1,9 +1,12 @@
 package com.phoenixjcam.client;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -31,10 +34,13 @@ public class ClientGUI implements Runnable
 	private DefaultCaret caret;
 	private String clientNick;
 	private ClientSet clientSet;
+	private JumperGUI jumperGUI;
+	
+	private boolean isAlone = true;
 
 	public ClientGUI(ClientSet clientSet)
 	{
-		this.frame = new JFrame("Jumper");
+		this.frame = new JFrame();
 		this.clientSet = clientSet;
 		// System.out.println(clientSet.readServerMsg());
 
@@ -42,6 +48,7 @@ public class ClientGUI implements Runnable
 		this.clientNick = JOptionPane.showInputDialog(this.frame, this.clientSet.readServerMsg());
 		clientSet.writeServerMsg(this.clientNick);
 
+		this.frame.setTitle("Jumper3 - Nick name - " + this.clientNick);
 		// try
 		// {
 		// clientSet.getObjectOutputStream().writeObject(this.clientNick);
@@ -60,7 +67,8 @@ public class ClientGUI implements Runnable
 		this.frame.setLocation(200, 200);
 		this.frame.setSize(JumperGUI.WIDTH + 300, JumperGUI.HEIGHT);
 
-		this.frame.add(new JumperGUI(clientSet, this), BorderLayout.CENTER);
+		this.jumperGUI = new JumperGUI(clientSet, this);
+		this.frame.add(jumperGUI, BorderLayout.CENTER);
 
 		this.frame.setVisible(true);
 
@@ -73,12 +81,65 @@ public class ClientGUI implements Runnable
 	@Override
 	public void run()
 	{
-		while (true)
+		synchronized (this)
 		{
-			String msg = this.clientSet.readServerMsg();
-			this.getTextArea().append(msg + "\n");
+			while (true)
+			{
+				//renderOtherPlayer(new Point2D.Double(560, 340));
+				
+				String msg = this.clientSet.readServerMsg();
+				this.getTextArea().append(msg + "\n");
+				
+				if(msg.startsWith("1"))
+				{
+					// position x
+					System.out.println("1");
+				}
+				
+				if(msg.startsWith("2"))
+				{
+					// position y
+					System.out.println("2");
+				}
+				
+				if(msg.startsWith("3"))
+				{
+					// position else
+					System.out.println("3");
+				}
+				
+				// char[] postX = new char[10];
+				// msg.getChars(20, 23, postX, 0);
+
+//				if (msg.contains("A new player"))
+//				{
+//					System.out.println("A new player");
+//					isAlone = false;
+//					// inform new player about me
+//					this.clientSet.writeServerMsg("Already in game " + this.clientNick);
+//					
+//					
+//					// render
+//					//renderOtherPlayer();
+//				}
+//				
+//				if (msg.contains("Already in game"))
+//				{
+//					System.out.println("Already in game");
+//					isAlone = false;
+//					// render
+//					//renderOtherPlayer();
+//				}
+//				
+//				if(isAlone == false)
+//				{
+//					
+//				}
+			}
 		}
 	}
+	
+	
 
 	private void addTextArea(JFrame frame)
 	{

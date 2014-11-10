@@ -9,18 +9,18 @@ package com.phoenixjcam.player;
 public class Physics
 {
 	/** player movement speed - x axis */
-	public double moveSpeed;
+	public int moveSpeed;
 
 	/** player jump vector has to minus - y axis */
-	public double jumpVector;
+	public int jumpVector;
 
 	/** player is turned to left - y axis */
-	public double fallingSpeed;
+	public int fallingSpeed;
 
 	public Physics()
 	{
-		moveSpeed = 5.0;
-		jumpVector = -14.0;
-		fallingSpeed = 5.0;
+		moveSpeed = 5;
+		jumpVector = -14;
+		fallingSpeed = 5;
 	}
 }

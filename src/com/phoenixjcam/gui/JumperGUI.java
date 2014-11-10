@@ -1,5 +1,6 @@
 package com.phoenixjcam.gui;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
@@ -77,36 +78,42 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 	@Override
 	public void run()
 	{
-		init();
-
-		while (running)
+		synchronized (this)
 		{
-			drawTime.start = System.currentTimeMillis();
+			init();
 
-			update();
-			render();
-			draw();
-
-			drawTime.delay = (System.currentTimeMillis() - drawTime.start);
-			drawTime.wait = drawTime.target - drawTime.delay;
-
-			// after focusing on different component like - textArea in this case it require come back to game
-			this.requestFocus();
-
-			// this.clientGUI.updateScrollPaneCaret(); doesn't work - caret is lost after activating text area component
-
-			if (drawTime.wait > 0)
+			while (running)
 			{
-				try
+				drawTime.start = System.currentTimeMillis();
+
+				update();
+				render();
+				renderOtherPlayer();
+				draw();
+
+				drawTime.delay = (System.currentTimeMillis() - drawTime.start);
+				drawTime.wait = drawTime.target - drawTime.delay;
+
+				// after focusing on different component like - textArea in this case it require come back to game
+				this.requestFocus();
+
+				// this.clientGUI.updateScrollPaneCaret(); doesn't work - caret is lost after activating text area
+				// component
+
+				if (drawTime.wait > 0)
 				{
-					Thread.sleep(drawTime.wait);
-				}
-				catch (InterruptedException e)
-				{
-					e.printStackTrace();
+					try
+					{
+						Thread.sleep(drawTime.wait);
+					}
+					catch (InterruptedException e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 		}
+
 	}
 
 	/** initialize game components */
@@ -122,7 +129,7 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 		// frame size 15 * 50 = 750 px width at 8 * 50 = 400 height - frame made as static size
 		map = new GameMap(50);
 
-		player = new Player(new Point(22, 22), new Point2D.Double(150.0, 150.0));
+		player = new Player(new Point(22, 22), new Point(150, 150));
 
 		movement = new Movement(map, player, clientSet, this.clientGUI);
 	}
@@ -146,6 +153,31 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 		g2.dispose();
 	}
 
+	public synchronized void renderOtherPlayer()
+	{
+		// player color
+		g2D.setColor(Color.BLUE);
+
+		int width = 22;
+		int height = 22;
+
+		// left corner of player (square)
+		// int x = (int) (position.x - width / 2);
+		// int y = (int) (position.y - height / 2);
+
+		g2D.fillRect(560, 340, width, height);
+	}
+
+	/**
+	 * One instance of this g2D will be in use for many threads.
+	 * 
+	 * @return
+	 */
+	public synchronized Graphics2D getG2D()
+	{
+		return g2D;
+	}
+
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
@@ -155,7 +187,7 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 	public void keyPressed(KeyEvent e)
 	{
 		int key = e.getKeyCode();
-		Point2D.Double position = player.getPosition();
+		Point position = player.getPosition();
 
 		if (key == KeyEvent.VK_LEFT)
 		{
@@ -173,7 +205,7 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 		// new position
 		if (key == KeyEvent.VK_N)
 		{
-			player.setPosition(new Point2D.Double(600, 70));
+			player.setPosition(new Point(600, 70));
 		}
 		// increase 1.0 to player speed
 		if (key == KeyEvent.VK_P)

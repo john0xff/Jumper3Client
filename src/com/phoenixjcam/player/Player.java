@@ -11,10 +11,10 @@ import java.awt.geom.Point2D;
 public class Player
 {
 	/** player position x, y */
-	private Point2D.Double position;
+	private Point position;
 
 	/** player next position x, y */
-	private Point2D.Double nextPosition;
+	private Point nextPosition;
 
 	/** player size as x - width and y - height */
 	private Point size;
@@ -32,18 +32,18 @@ public class Player
 	 * @param Point2D
 	 *            .Double position
 	 */
-	public Player(Point size, Point2D.Double position)
+	public Player(Point size, Point position)
 	{
 		this.size = size;
 		this.position = position;
 		physics = new Physics();
 		direcrion = new Direcrion();
 
-		nextPosition = new Point2D.Double(0.0, 0.0);
+		nextPosition = new Point(0, 0);
 
 	}
 
-	public Point2D.Double getPosition()
+	public Point getPosition()
 	{
 		return position;
 	}
@@ -53,17 +53,17 @@ public class Player
 	 * 
 	 * @param position
 	 */
-	public void setPosition(Point2D.Double position)
+	public void setPosition(Point position)
 	{
 		this.position = position;
 	}
 
-	public Point2D.Double getNextPosition()
+	public Point getNextPosition()
 	{
 		return nextPosition;
 	}
 
-	public void setNextPosition(Point2D.Double nextPosition)
+	public void setNextPosition(Point nextPosition)
 	{
 		this.nextPosition = nextPosition;
 	}
@@ -139,32 +139,32 @@ public class Player
 		this.size.y = height;
 	}
 
-	public double getMoveSpeed()
+	public int getMoveSpeed()
 	{
 		return physics.moveSpeed;
 	}
 
-	public void setMoveSpeed(double moveSpeed)
+	public void setMoveSpeed(int moveSpeed)
 	{
 		physics.moveSpeed = moveSpeed;
 	}
 
-	public double getFallingSpeed()
+	public int getFallingSpeed()
 	{
 		return physics.fallingSpeed;
 	}
 
-	public void setFallingSpeed(double fallingSpeed)
+	public void setFallingSpeed(int fallingSpeed)
 	{
 		physics.fallingSpeed = fallingSpeed;
 	}
 
-	public double getJumpVector()
+	public int getJumpVector()
 	{
 		return physics.jumpVector;
 	}
 
-	public void setJumpVector(double jumpStart)
+	public void setJumpVector(int jumpStart)
 	{
 		physics.jumpVector = jumpStart;
 	}

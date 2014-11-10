@@ -3,7 +3,13 @@ package com.phoenixjcam.movement;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 
+import javax.swing.JFrame;
+
+import com.phoenixjcam.client.ClientGUI;
+import com.phoenixjcam.client.ClientSet;
+import com.phoenixjcam.client.Utils;
 import com.phoenixjcam.map.GameMap;
 import com.phoenixjcam.player.Player;
 
@@ -45,13 +51,24 @@ public class Movement
 	/** player movement collision */
 	private Point2D.Double collision;
 
-	public Movement(GameMap map, Player player)
+	private ClientSet clientSet;
+	private ClientGUI clientGUI;
+
+	Point2D.Double currentPositionForServer;
+	Point2D.Double oldPositionForServer;
+
+	public Movement(GameMap map, Player player, ClientSet clientSet, ClientGUI clientGUI)
 	{
+		this.clientSet = clientSet;
+		this.clientGUI = clientGUI;
+
 		this.map = map;
 		this.player = player;
 		newPosition = new Point2D.Double();
 
 		collision = new Point2D.Double();
+
+		this.oldPositionForServer = new Point2D.Double(0, 0);
 	}
 
 	/**
@@ -281,6 +298,25 @@ public class Movement
 		// update player position
 		position.x = newPosition.x;
 		position.y = newPosition.y;
+
+		// BUG?
+		// need to create new object cuz sending the same reference(position) to server cause rendering always the same
+		// value on server side and in the future in other clients frame
+		// My guess reference somewhere on the server side is cashed
+		// This case with new object each time works.
+		currentPositionForServer = new Point2D.Double(position.x, position.y);
+
+		if (!oldPositionForServer.equals(currentPositionForServer))
+		{
+			String msg = Utils.getCurrentTime() + " " + currentPositionForServer.toString();
+			// this.clientSet.getObjectOutputStream().writeObject(msg);
+
+			this.clientSet.writeServerMsg(msg);
+			this.clientGUI.getTextArea().append(this.clientGUI.getClientNick() + " " + msg + "\n");
+		}
+
+		oldPositionForServer = currentPositionForServer;
+
 	}
 
 	public void draw(Graphics2D g)

@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.phoenixjcam.client.ClientGUI;
 import com.phoenixjcam.client.ClientSet;
 import com.phoenixjcam.map.GameMap;
 import com.phoenixjcam.movement.Movement;
@@ -48,10 +49,13 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 	private DrawTime drawTime;
 
 	private ClientSet clientSet;
+	private ClientGUI clientGUI;
+
 	private static int counterServer = 0;
 
-	public JumperGUI(ClientSet clientSet)
+	public JumperGUI(ClientSet clientSet, ClientGUI clientGUI)
 	{
+		this.clientGUI = clientGUI;
 		this.clientSet = clientSet;
 		drawTime = new DrawTime();
 		setFocusable(true);
@@ -89,6 +93,8 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 			// after focusing on different component like - textArea in this case it require come back to game
 			this.requestFocus();
 
+			// this.clientGUI.updateScrollPaneCaret(); doesn't work - caret is lost after activating text area component
+
 			if (drawTime.wait > 0)
 			{
 				try
@@ -118,7 +124,7 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 
 		player = new Player(new Point(22, 22), new Point2D.Double(150.0, 150.0));
 
-		movement = new Movement(map, player);
+		movement = new Movement(map, player, clientSet, this.clientGUI);
 	}
 
 	private void update()
@@ -153,41 +159,31 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 
 		if (key == KeyEvent.VK_LEFT)
 		{
-			sendPlayerPosition(position);
 			player.setTurnedLeft(true);
-
-			System.out.println(position);
-
-			// update position on server on every key pressed
 		}
 		else if (key == KeyEvent.VK_RIGHT)
 		{
 			player.setTurnedRight(true);
-			System.out.println(player.getPosition());
 		}
 
 		if (key == KeyEvent.VK_SPACE)
 		{
 			player.setJumping();
-			System.out.println(player.getPosition());
 		}
 		// new position
 		if (key == KeyEvent.VK_N)
 		{
 			player.setPosition(new Point2D.Double(600, 70));
-			System.out.println(player.getPosition());
 		}
 		// increase 1.0 to player speed
 		if (key == KeyEvent.VK_P)
 		{
 			player.increaseSpeed();
-			System.out.println(player.getPosition());
 		}
 		// decrease 1.0 from player speed
 		else if (key == KeyEvent.VK_M)
 		{
 			player.decreaseSpeed();
-			System.out.println(player.getPosition());
 		}
 	}
 

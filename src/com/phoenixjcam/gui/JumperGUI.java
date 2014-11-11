@@ -60,19 +60,10 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 		this.clientSet = clientSet;
 		drawTime = new DrawTime();
 		setFocusable(true);
-		// requestFocus();
-	}
-
-	@Override
-	public void addNotify()
-	{
-		super.addNotify();
-		if (thread == null)
-		{
-			thread = new Thread(this);
-			thread.start();
-		}
 		addKeyListener(this);
+
+		new Thread(this).start();
+		// requestFocus();
 	}
 
 	@Override
@@ -165,7 +156,13 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 		// int x = (int) (position.x - width / 2);
 		// int y = (int) (position.y - height / 2);
 
-		g2D.fillRect(560, 340, width, height);
+		if (this.clientGUI.getPlayerEnvelope() != null)
+		{
+			 int x = (int) (this.clientGUI.getPlayerEnvelope().getPosition().x - width / 2);
+			 int y = (int) (this.clientGUI.getPlayerEnvelope().getPosition().y - height / 2);
+			g2D.fillRect(x, y, width, height);
+		}
+			
 	}
 
 	/**

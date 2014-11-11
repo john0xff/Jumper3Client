@@ -19,6 +19,7 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.JTextComponent;
 
 import com.phoenixjcam.gui.JumperGUI;
+import com.phoenixjcam.net.envelope.PlayerEnvelope;
 
 /**
  * this. convention
@@ -37,6 +38,8 @@ public class ClientGUI implements Runnable
 	private JumperGUI jumperGUI;
 	
 	private boolean isAlone = true;
+	
+	private PlayerEnvelope playerEnvelope;
 
 	public ClientGUI(ClientSet clientSet)
 	{
@@ -74,6 +77,22 @@ public class ClientGUI implements Runnable
 
 		new Thread(this).start();
 	}
+	
+	
+	//synchronized dead lock :) between render thread and reader thread
+	public PlayerEnvelope getPlayerEnvelope()
+	{
+		return playerEnvelope;
+	}
+
+
+
+	public synchronized void setPlayerEnvelope(PlayerEnvelope playerEnvelope)
+	{
+		this.playerEnvelope = playerEnvelope;
+	}
+
+
 
 	/**
 	 * Get all msg's from server about new users and render them.
@@ -85,28 +104,39 @@ public class ClientGUI implements Runnable
 		{
 			while (true)
 			{
+				
+//				String aa = this.clientSet.readServerMsg();
+//				
+//				System.out.println(aa);
 				//renderOtherPlayer(new Point2D.Double(560, 340));
 				
-				String msg = this.clientSet.readServerMsg();
-				this.getTextArea().append(msg + "\n");
+				PlayerEnvelope playerEnvelope = this.clientSet.readPlayerEnvelope();
+				//this.getTextArea().append(msg + "\n");
 				
-				if(msg.startsWith("1"))
-				{
-					// position x
-					System.out.println("1");
-				}
+				this.setPlayerEnvelope(playerEnvelope);
 				
-				if(msg.startsWith("2"))
-				{
-					// position y
-					System.out.println("2");
-				}
+				this.getTextArea().append("Receive - " + playerEnvelope.getName() + "  " + playerEnvelope.getPosition().x + "  " + playerEnvelope.getPosition().y + "\n");
 				
-				if(msg.startsWith("3"))
-				{
-					// position else
-					System.out.println("3");
-				}
+				System.out.println(playerEnvelope.getName());
+				System.out.println(playerEnvelope.getPosition());
+				
+//				if(msg.startsWith("1"))
+//				{
+//					// position x
+//					System.out.println("1");
+//				}
+//				
+//				if(msg.startsWith("2"))
+//				{
+//					// position y
+//					System.out.println("2");
+//				}
+//				
+//				if(msg.startsWith("3"))
+//				{
+//					// position else
+//					System.out.println("3");
+//				}
 				
 				// char[] postX = new char[10];
 				// msg.getChars(20, 23, postX, 0);

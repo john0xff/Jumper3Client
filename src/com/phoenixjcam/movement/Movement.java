@@ -12,6 +12,7 @@ import com.phoenixjcam.client.ClientGUI;
 import com.phoenixjcam.client.ClientSet;
 import com.phoenixjcam.client.Utils;
 import com.phoenixjcam.map.GameMap;
+import com.phoenixjcam.net.envelope.PlayerEnvelope;
 import com.phoenixjcam.player.Player;
 
 /**
@@ -310,18 +311,20 @@ public class Movement
 
 		if (!oldPositionForServer.equals(currentPositionForServer))
 		{
-			String msg2 = Utils.getCurrentTime() + " " + currentPositionForServer.toString();
+			//String msg2 = Utils.getCurrentTime() + " " + currentPositionForServer.toString();
 			
 			// double posX = currentPositionForServer.x;
 			// double posY = currentPositionForServer.y;
 			
 			//String msg = String.valueOf(posX);
 			
-			String msg = currentPositionForServer.toString();
+			//String msg = currentPositionForServer.toString();
 			// this.clientSet.getObjectOutputStream().writeObject(msg);
-
-			this.clientSet.writeServerMsg(msg);
-			this.clientGUI.getTextArea().append(this.clientGUI.getClientNick() + " " + msg2 + "\n");
+			
+			PlayerEnvelope playerEnvelope = new PlayerEnvelope(this.clientGUI.getClientNick(), new Point(currentPositionForServer));
+			this.clientSet.writeEnvelope(playerEnvelope);
+			//this.clientSet.writeServerMsg(msg);
+			this.clientGUI.getTextArea().append("Sended to server - " + playerEnvelope.getName() + "  " + playerEnvelope.getPosition().x + "  " + playerEnvelope.getPosition().y + "\n");
 		}
 
 		oldPositionForServer = currentPositionForServer;

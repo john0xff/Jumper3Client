@@ -12,6 +12,8 @@ import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
+import com.phoenixjcam.net.envelope.PlayerEnvelope;
+
 public class ClientSet
 {
 	private final static String NEW_LINE = "\n";
@@ -23,8 +25,6 @@ public class ClientSet
 	private ObjectInputStream objectInputStream;
 
 	private boolean isOpen = false;
-	
-
 
 	public ClientSet(String host, int port)
 	{
@@ -36,7 +36,6 @@ public class ClientSet
 			objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
 			objectInputStream = new ObjectInputStream(clientSocket.getInputStream());
 
-		
 		}
 		catch (UnknownHostException e)
 		{
@@ -47,11 +46,11 @@ public class ClientSet
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String readServerMsg()
 	{
 		String msg = null;
-		
+
 		try
 		{
 			msg = this.getObjectInputStream().readObject().toString();
@@ -61,10 +60,40 @@ public class ClientSet
 			e.printStackTrace();
 			System.err.println("err in readServerMsg()");
 		}
-		
+
 		return msg;
 	}
+
+	public PlayerEnvelope readPlayerEnvelope()
+	{
+		PlayerEnvelope playerEnvelope = null;
+
+		try
+		{
+			playerEnvelope = (PlayerEnvelope) this.getObjectInputStream().readObject();
+		}
+		catch (ClassNotFoundException | IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return playerEnvelope;
+	}
 	
+	public void writeEnvelope(PlayerEnvelope playerEnvelope)
+	{
+		try
+		{
+			this.getObjectOutputStream().writeObject(playerEnvelope);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			System.err.println("err in writeServerMsg(String msg)");
+		}
+	}
+
 	public void writeServerMsg(String msg)
 	{
 		try

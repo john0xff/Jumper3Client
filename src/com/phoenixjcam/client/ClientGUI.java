@@ -18,7 +18,7 @@ import javax.swing.text.Caret;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.JTextComponent;
 
-import com.phoenixjcam.gui.JumperGUI;
+import com.phoenixjcam.gui.GamePanel;
 import com.phoenixjcam.net.envelope.PlayerEnvelope;
 
 /**
@@ -35,32 +35,21 @@ public class ClientGUI implements Runnable
 	private DefaultCaret caret;
 	private String clientNick;
 	private ClientSet clientSet;
-	private JumperGUI jumperGUI;
-	
-	private boolean isAlone = true;
-	
+	private GamePanel jumperGUI;
 	private PlayerEnvelope playerEnvelope;
 
 	public ClientGUI(ClientSet clientSet)
 	{
 		this.frame = new JFrame();
 		this.clientSet = clientSet;
-		// System.out.println(clientSet.readServerMsg());
 
 		// block until read first msg from server
-		this.clientNick = JOptionPane.showInputDialog(this.frame, this.clientSet.readServerMsg());
+		// this.clientNick = JOptionPane.showInputDialog(this.frame, this.clientSet.readServerMsg());
+		
+		this.clientNick = "A";
 		clientSet.writeServerMsg(this.clientNick);
 
 		this.frame.setTitle("Jumper3 - Nick name - " + this.clientNick);
-		// try
-		// {
-		// clientSet.getObjectOutputStream().writeObject(this.clientNick);
-		// }
-		// catch (IOException e)
-		// {
-		// e.printStackTrace();
-		// }
-
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		this.addTextArea(this.frame);
@@ -68,31 +57,26 @@ public class ClientGUI implements Runnable
 
 		this.frame.setResizable(false);
 		this.frame.setLocation(200, 200);
-		this.frame.setSize(JumperGUI.WIDTH + 300, JumperGUI.HEIGHT);
+		this.frame.setSize(GamePanel.WIDTH + 300, GamePanel.HEIGHT);
 
-		this.jumperGUI = new JumperGUI(clientSet, this);
+		this.jumperGUI = new GamePanel(clientSet, this);
+
 		this.frame.add(jumperGUI, BorderLayout.CENTER);
-
 		this.frame.setVisible(true);
 
 		new Thread(this).start();
 	}
-	
-	
-	//synchronized dead lock :) between render thread and reader thread
+
+	// synchronized dead lock :) between render thread and reader thread
 	public PlayerEnvelope getPlayerEnvelope()
 	{
-		return playerEnvelope;
+		return this.playerEnvelope;
 	}
-
-
 
 	public synchronized void setPlayerEnvelope(PlayerEnvelope playerEnvelope)
 	{
 		this.playerEnvelope = playerEnvelope;
 	}
-
-
 
 	/**
 	 * Get all msg's from server about new users and render them.
@@ -104,72 +88,67 @@ public class ClientGUI implements Runnable
 		{
 			while (true)
 			{
-				
-//				String aa = this.clientSet.readServerMsg();
-//				
-//				System.out.println(aa);
-				//renderOtherPlayer(new Point2D.Double(560, 340));
-				
 				PlayerEnvelope playerEnvelope = this.clientSet.readPlayerEnvelope();
-				//this.getTextArea().append(msg + "\n");
-				
+
 				this.setPlayerEnvelope(playerEnvelope);
-				
-				this.getTextArea().append("Receive - " + playerEnvelope.getName() + "  " + playerEnvelope.getPosition().x + "  " + playerEnvelope.getPosition().y + "\n");
-				
-				System.out.println(playerEnvelope.getName());
-				System.out.println(playerEnvelope.getPosition());
-				
-//				if(msg.startsWith("1"))
-//				{
-//					// position x
-//					System.out.println("1");
-//				}
-//				
-//				if(msg.startsWith("2"))
-//				{
-//					// position y
-//					System.out.println("2");
-//				}
-//				
-//				if(msg.startsWith("3"))
-//				{
-//					// position else
-//					System.out.println("3");
-//				}
-				
+
+				// String playerName = playerEnvelope.getName();
+				// int x = playerEnvelope.getPosition().x;
+				// int y = playerEnvelope.getPosition().y;
+
+				//this.getTextArea().append("Receive - " + playerName + "  " + x + "  " + y + "\n");
+
+				//System.out.println(playerEnvelope.getName());
+				// System.out.println(playerEnvelope.getPosition());
+
+				// if(msg.startsWith("1"))
+				// {
+				// // position x
+				// System.out.println("1");
+				// }
+				//
+				// if(msg.startsWith("2"))
+				// {
+				// // position y
+				// System.out.println("2");
+				// }
+				//
+				// if(msg.startsWith("3"))
+				// {
+				// // position else
+				// System.out.println("3");
+				// }
+
 				// char[] postX = new char[10];
 				// msg.getChars(20, 23, postX, 0);
 
-//				if (msg.contains("A new player"))
-//				{
-//					System.out.println("A new player");
-//					isAlone = false;
-//					// inform new player about me
-//					this.clientSet.writeServerMsg("Already in game " + this.clientNick);
-//					
-//					
-//					// render
-//					//renderOtherPlayer();
-//				}
-//				
-//				if (msg.contains("Already in game"))
-//				{
-//					System.out.println("Already in game");
-//					isAlone = false;
-//					// render
-//					//renderOtherPlayer();
-//				}
-//				
-//				if(isAlone == false)
-//				{
-//					
-//				}
+				// if (msg.contains("A new player"))
+				// {
+				// System.out.println("A new player");
+				// isAlone = false;
+				// // inform new player about me
+				// this.clientSet.writeServerMsg("Already in game " + this.clientNick);
+				//
+				//
+				// // render
+				// //renderOtherPlayer();
+				// }
+				//
+				// if (msg.contains("Already in game"))
+				// {
+				// System.out.println("Already in game");
+				// isAlone = false;
+				// // render
+				// //renderOtherPlayer();
+				// }
+				//
+				// if(isAlone == false)
+				// {
+				//
+				// }
 			}
 		}
 	}
-	
-	
 
 	private void addTextArea(JFrame frame)
 	{
@@ -179,7 +158,7 @@ public class ClientGUI implements Runnable
 
 		this.updateScrollPaneCaret();
 
-		this.scrollPane.setPreferredSize(new Dimension(300, JumperGUI.HEIGHT));
+		this.scrollPane.setPreferredSize(new Dimension(300, GamePanel.HEIGHT));
 		this.frame.add(this.scrollPane, BorderLayout.LINE_END);
 	}
 

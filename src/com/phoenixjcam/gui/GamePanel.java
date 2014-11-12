@@ -25,11 +25,11 @@ import com.phoenixjcam.player.Player;
  * @author Bart Bien
  * 
  */
-public class JumperGUI extends JPanel implements Runnable, KeyListener
+public class GamePanel extends JPanel implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 1L;
 
-	// static size of frame
+	// size of frame
 	public static final int WIDTH = 750;
 	public static final int HEIGHT = 440;
 
@@ -54,7 +54,10 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 
 	private static int counterServer = 0;
 
-	public JumperGUI(ClientSet clientSet, ClientGUI clientGUI)
+	private boolean autoLeft = true;
+	private boolean autoRight = false;
+
+	public GamePanel(ClientSet clientSet, ClientGUI clientGUI)
 	{
 		this.clientGUI = clientGUI;
 		this.clientSet = clientSet;
@@ -63,7 +66,6 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 		addKeyListener(this);
 
 		new Thread(this).start();
-		// requestFocus();
 	}
 
 	@Override
@@ -82,6 +84,15 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 				renderOtherPlayer();
 				draw();
 
+				if (autoLeft)
+				{
+					autoLeftMovement();
+				}
+
+				if (!autoLeft)
+				{
+					autoRightMovement();
+				}
 				drawTime.delay = (System.currentTimeMillis() - drawTime.start);
 				drawTime.wait = drawTime.target - drawTime.delay;
 
@@ -105,6 +116,35 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 			}
 		}
 
+	}
+
+	private void autoLeftMovement()
+	{
+		int x = movement.getCurrentPosition().x;
+
+		if (x >= 61)
+			player.setTurnedLeft(true);
+
+		if (x == 61)
+		{
+			autoLeft = false;
+			player.setTurnedLeft(false);
+		}
+
+	}
+
+	private void autoRightMovement()
+	{
+		int x = movement.getCurrentPosition().x;
+
+		if (x <= 689)
+			player.setTurnedRight(true);
+
+		if (x == 689)
+		{
+			autoLeft = true;
+			player.setTurnedRight(false);
+		}
 	}
 
 	/** initialize game components */
@@ -158,11 +198,11 @@ public class JumperGUI extends JPanel implements Runnable, KeyListener
 
 		if (this.clientGUI.getPlayerEnvelope() != null)
 		{
-			 int x = (int) (this.clientGUI.getPlayerEnvelope().getPosition().x - width / 2);
-			 int y = (int) (this.clientGUI.getPlayerEnvelope().getPosition().y - height / 2);
+			int x = (int) (this.clientGUI.getPlayerEnvelope().getPosition().x - width / 2);
+			int y = (int) (this.clientGUI.getPlayerEnvelope().getPosition().y - height / 2);
 			g2D.fillRect(x, y, width, height);
 		}
-			
+
 	}
 
 	/**

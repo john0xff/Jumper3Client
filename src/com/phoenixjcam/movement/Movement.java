@@ -324,7 +324,9 @@ public class Movement
 			PlayerEnvelope playerEnvelope = new PlayerEnvelope(this.clientGUI.getClientNick(), new Point(currentPositionForServer));
 			this.clientSet.writeEnvelope(playerEnvelope);
 			//this.clientSet.writeServerMsg(msg);
-			this.clientGUI.getTextArea().append("Sended to server - " + playerEnvelope.getName() + "  " + playerEnvelope.getPosition().x + "  " + playerEnvelope.getPosition().y + "\n");
+			
+			
+			//this.clientGUI.getTextArea().append("Sended to server - " + playerEnvelope.getName() + "  " + playerEnvelope.getPosition().x + "  " + playerEnvelope.getPosition().y + "\n");
 		}
 
 		oldPositionForServer = currentPositionForServer;
@@ -345,4 +347,10 @@ public class Movement
 
 		g.fillRect(x, y, width, height);
 	}
+
+	public Point getCurrentPosition()
+	{
+		return this.position;
+	}
+	
 }
